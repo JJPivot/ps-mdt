@@ -4,6 +4,8 @@ Config.UsingPsHousing = false
 Config.UsingDefaultQBApartments = true
 Config.OnlyShowOnDuty = true
 Config.UseCQCMugshot = true
+Config.PDSeeDOJReports = true -- If true, PD can see DOJ Reports. DOJ will never see PD Reports. If false, PD can only see PD reports
+Config.CanDOJEditProfiles = true -- If true, DOJ can edit profile note/user info. If false DOJ can not edit anything. DOJ can never edit licenses.
 
 -- Front, Back Side. Use 4 for both sides, we recommend leaving at 1 for default.
 Config.MugPhotos = 1

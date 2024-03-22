@@ -4108,32 +4108,39 @@ $(document).ready(() => {
         $(".manage-reports-title").css("margin-right", "0px").css("width", "66%");
       } else if (DojJobs[sentJob] !== undefined) {
         applyCustomTheme(customThemes.doj)
-        //$(".quote-span").html("Actually useless.");
-        //$(".dmv-nav-item").hide();
-        $(".weapons-nav-item").show()
+        // Edits the DOJ MDT so DOJ can see Dashboard (Chat, Warrants, Bulletins, On duty, calls section is shown but actual dispatch calls wont show), Profiles, Incidents, Reports, Roster, SOPs, DMV, Weapons, Staff Logs. Other PD specific tabs are hidden.
+        $("#home-warrants-container").fadeIn(0);
+        $("#home-reports-container").fadeOut(0);
+        //$(".quote-span").html("TUCKER MALD, BEST MALD");
+        $(".incidents-nav-item").show();
         $(".bolo-nav-item").hide();
-        $(".dispatch-title-ofsomesort").html("Message Board");
-        $(".dispatch-comms-container").fadeOut(0);
-        $(".manage-profile-name-input-1").attr("readonly", false);
-        $(".manage-profile-name-input-2").attr("readonly", false);
-        $("#home-warrants-container").css("height", "98%");
+        $(".dmv-nav-item").show();
+        $(".weapons-nav-item").show()
+        $(".cams-nav-item").hide();
+        $(".map-nav-item").hide();
+        $(".manage-profile-name-input-1").attr("readonly", true);
+        $(".manage-profile-name-input-2").attr("readonly", true);
+        $("#reports-officers-involved-tag-title").html(
+          "Officers Involved"
+        );
+        $("#bolos-officers-involved-tag-title").html(
+          "Officers Involved"
+        );
         $(".roster-iframe").attr("src", rosterLink);
         $(".sop-iframe").attr("src", sopLink);
 
-        $(".manage-profile-save").css("display", "none");
-        $(".manage-profile-editing-title").css("display", "none");
-        $(".manage-incidents-create").css("display", "none");
-        $(".manage-incidents-title").css("margin-right", "auto");
-        $(".manage-incidents-title").css("width", "95%");
-        $(".manage-incidents-save").css("display", "none");
-        $(".manage-incidents-editing-title").css("display", "none");
-        $(".manage-reports-new").css("display", "none");
-        $(".manage-reports-save").css("display", "none");
-        $(".manage-reports-editing-title").css("display", "none");
-        $(".vehicle-information-save").css("display", "none");
-        $(".vehicle-information-title").css("margin-right", "auto").css("width", "95%");
-        $(".manage-incidents-title ").css("margin-right", "auto")
-        $(".manage-reports-title").css("margin-right", "auto").css("width", "95%");
+        $(".manage-profile-save").css("display", "block");
+        $(".manage-profile-editing-title").css("display", "block");
+        $(".manage-incidents-create").css("display", "block");
+        $(".manage-incidents-save").css("display", "block");
+        $(".manage-incidents-editing-title").css("display", "block");
+        $(".manage-reports-new").css("display", "block");
+        $(".manage-reports-save").css("display", "block");
+        $(".manage-reports-editing-title").css("display", "block");
+        $(".vehicle-information-save").css("display", "block");
+        $(".vehicle-information-title").css("margin-right", "0px").css("width", "81%");
+        $(".manage-incidents-title ").css("margin-right", "0px")
+        $(".manage-reports-title").css("margin-right", "0px").css("width", "66%");
       }
     }
   }
@@ -4791,8 +4798,11 @@ window.addEventListener("message", function (event) {
         $(".manage-incidents-create").css("margin-right", "0px");
       } else if (DojJobs[playerJob] !== undefined) {
         $(".manage-incidents-title-holder").prepend(
-          `
+            // Just a quick edit so the save/create button is not shown cutoff. Just the same as PD and EMS create and save buttons.
+            `
             <div class="manage-incidents-title">Manage Incident</div>
+            <div class="manage-incidents-create"> <span class="fas fa-plus" style="margin-top: 3.5px;"></span></div>
+            <div class="manage-incidents-save"><span class="fas fa-save" style="margin-top: 3.5px;"></span></div>
             `
         );
         $(".manage-incidents-title").css("width", "95%");
@@ -4842,11 +4852,12 @@ window.addEventListener("message", function (event) {
           </div>
         `;
 
+        // Warrant Button only shows for DOJ Jobs
         $(".incidents-ghost-holder").prepend(
           `<div class="associated-incidents-user-container" data-id="${cid}">
               <div class="associated-incidents-user-title">${value.name} (#${cid})</div>
               <div class="associated-incidents-user-tags-holder">
-                  <div class="associated-incidents-user-tag ${warrantTag}" data-id="${cid}">Warrant</div>
+                  ${DojJobs[playerJob] == true ? `<div class="associated-incidents-user-tag ${warrantTag}" data-id="${cid}">Warrant</div>` : ''}
                   <div class="associated-incidents-user-tag ${guiltyTag}" data-id="${cid}">Guilty</div>
                   <div class="associated-incidents-user-tag ${processedTag}" data-id="${cid}">Processed</div>
                   <div class="associated-incidents-user-tag ${associatedTag}" data-id="${cid}">Associated</div>

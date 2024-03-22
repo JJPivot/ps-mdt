@@ -537,22 +537,31 @@ end)
 RegisterNetEvent("mdt:server:saveProfile", function(pfp, information, cid, fName, sName, tags, gallery, licenses, fingerprint)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    UpdateAllLicenses(cid, licenses)
+	local fullname = Player.PlayerData.charinfo.firstname.." "..Player.PlayerData.charinfo.lastname 
+    -- UpdateAllLicenses(cid, licenses)
     if Player then
         local JobType = GetJobType(Player.PlayerData.job.name)
-        if JobType == 'doj' then JobType = 'police' end
 
-        MySQL.Async.insert('INSERT INTO mdt_data (cid, information, pfp, jobtype, tags, gallery, fingerprint) VALUES (:cid, :information, :pfp, :jobtype, :tags, :gallery, :fingerprint) ON DUPLICATE KEY UPDATE cid = :cid, information = :information, pfp = :pfp, jobtype = :jobtype, tags = :tags, gallery = :gallery, fingerprint = :fingerprint', {
-            cid = cid,
-            information = information,
-            pfp = pfp,
-            jobtype = JobType,
-            tags = json.encode(tags),
-            gallery = json.encode(gallery),
-            fingerprint = fingerprint,
-        }, function()
-        end)
-    end
+		if Config.CanDOJEditProfiles == false then JobType = 'police'  -- If the config option that DOJ can not edit profiles than it will it will end
+		else
+			-- if JobType == 'doj' then JobType = 'police' end
+			if JobType == 'police' then -- Only PD can update licenses, DOJ is able to click to "grant" license but it won't save
+				UpdateAllLicenses(cid, licenses)
+			end
+
+			-- DOJ able to save the sql data but not licenses if the config = true.
+			MySQL.Async.insert('INSERT INTO mdt_data (cid, information, pfp, jobtype, tags, gallery, fingerprint) VALUES (:cid, :information, :pfp, :jobtype, :tags, :gallery, :fingerprint) ON DUPLICATE KEY UPDATE cid = :cid, information = :information, pfp = :pfp, jobtype = :jobtype, tags = :tags, gallery = :gallery, fingerprint = :fingerprint', {
+				cid = cid,
+				information = information,
+				pfp = pfp,
+				jobtype = JobType,
+				tags = json.encode(tags),
+				gallery = json.encode(gallery),
+				fingerprint = fingerprint,
+			}, function()
+			end)
+		end
+	end
 end)
 
 
@@ -879,11 +888,29 @@ RegisterNetEvent('mdt:server:getAllReports', function()
 	if Player then
 		local JobType = GetJobType(Player.PlayerData.job.name)
 		if JobType == 'police' or JobType == 'doj' or JobType == 'ambulance' then
-			if JobType == 'doj' then JobType = 'police' end
+
+			if JobType == 'doj' then -- This allows DOJ to only see DOJ reports, no others.
 			local matches = MySQL.query.await("SELECT * FROM `mdt_reports` WHERE jobtype = :jobtype ORDER BY `id` DESC LIMIT 30", {
 				jobtype = JobType
 			})
 			TriggerClientEvent('mdt:client:getAllReports', src, matches)
+			end
+
+			if Config.PDSeeDOJReports == true then -- This option is for PD if they can see DOJ AND PD or just PD
+				if JobType == 'police' then -- PD Can see both
+					local matches = MySQL.query.await("SELECT * FROM `mdt_reports` WHERE jobtype IN ('police', 'doj') ORDER BY `id` DESC LIMIT 30", {
+					jobtype = JobType
+				})
+				TriggerClientEvent('mdt:client:getAllReports', src, matches)
+				end
+			else
+				if JobType == 'police' then -- PD Can only see PD
+					local matches = MySQL.query.await("SELECT * FROM `mdt_reports` WHERE jobtype = :jobtype ORDER BY `id` DESC LIMIT 30", {
+					jobtype = JobType
+				})
+				TriggerClientEvent('mdt:client:getAllReports', src, matches)
+				end
+			end
 		end
 	end
 end)
@@ -895,8 +922,8 @@ RegisterNetEvent('mdt:server:getReportData', function(sentId)
 		if Player then
 			local JobType = GetJobType(Player.PlayerData.job.name)
 			if JobType == 'police' or JobType == 'doj' or JobType == 'ambulance' then
-				if JobType == 'doj' then JobType = 'police' end
-				local matches = MySQL.query.await("SELECT * FROM `mdt_reports` WHERE `id` = :id AND `jobtype` = :jobtype LIMIT 1", {
+				if JobType == 'doj' then JobType = 'police' end -- This just loads the report data on the MDT, which both PD and DOJ can load the data. But if the above event is configured where PD can only see PD than they won't be able to select the report.
+				local matches = MySQL.query.await("SELECT * FROM `mdt_reports` WHERE `id` = :id AND `jobtype` IN ('police', 'doj') LIMIT 1", {
 					id = sentId,
 					jobtype = JobType
 				})
@@ -1326,7 +1353,7 @@ RegisterNetEvent('mdt:server:saveIncident', function(id, title, information, tag
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     if Player then
-        if GetJobType(Player.PlayerData.job.name) == 'police' then
+        if GetJobType(Player.PlayerData.job.name) == 'police' or 'doj' then -- Allows DOJ to Save Incidents
             if id == 0 then
                 local fullname = Player.PlayerData.charinfo.firstname .. ' ' .. Player.PlayerData.charinfo.lastname
                 MySQL.insert('INSERT INTO `mdt_incidents` (`author`, `title`, `details`, `tags`, `officersinvolved`, `civsinvolved`, `evidence`, `time`, `jobtype`) VALUES (:author, :title, :details, :tags, :officersinvolved, :civsinvolved, :evidence, :time, :jobtype)',

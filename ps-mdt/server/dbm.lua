@@ -29,7 +29,7 @@ function GetNameFromId(cid)
 end
 
 function GetPersonInformation(cid, jobtype)
-    local result = MySQL.query.await('SELECT information, tags, gallery, pfp, fingerprint FROM mdt_data WHERE cid = ? and jobtype = ?', { cid,  jobtype})
+    local result = MySQL.query.await('SELECT information, tags, gallery, pfp, fingerprint FROM mdt_data WHERE cid = ? and jobtype IN (?, ?)', { cid, 'police', 'doj'}) -- DOJ and Police jobs can see each other profile notes.
     return result[1]
 end
 
@@ -57,7 +57,7 @@ function GetPlayerVehicles(cid, cb)
 end
 
 function GetBulletins(JobType)
-	return MySQL.query.await('SELECT * FROM `mdt_bulletin` WHERE `jobtype` = ? LIMIT 10', { JobType })
+	return MySQL.query.await('SELECT * FROM `mdt_bulletin` WHERE `jobtype` IN (?, ?) LIMIT 50', { 'police', 'doj' }) -- Both DOJ and Police jobs can see both job's bulletin board messages
 end
 
 function GetPlayerProperties(cid, cb)
