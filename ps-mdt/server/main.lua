@@ -1369,13 +1369,13 @@ RegisterNetEvent('mdt:server:saveIncident', function(id, title, information, tag
                     jobtype = 'police',
                 }, function(infoResult)
                     if infoResult then
-                        MySQL.Async.fetchAll('SELECT `author`, `title`, `details` FROM `mdt_incidents` WHERE `id` = @id', { ['@id'] = infoResult }, function(result)
+                        MySQL.Async.fetchAll('SELECT `author`, `title`, `details`, `id` FROM `mdt_incidents` WHERE `id` = @id', { ['@id'] = infoResult }, function(result)
                             if result and #result > 0 then
                                 local message = generateMessageFromResult(result)
                                 
                                 for i=1, #associated do
                                     local associatedData = {
-                                        cid = associated[i]['Cid'],
+										cid = associated[i]['Cid'],
                                         linkedincident = associated[i]['LinkedIncident'],
                                         warrant = associated[i]['Warrant'],
                                         guilty = associated[i]['Guilty'],
@@ -1388,10 +1388,11 @@ RegisterNetEvent('mdt:server:saveIncident', function(id, title, information, tag
                                         recsentence = tonumber(associated[i]['recsentence']),
                                         time = associated[i]['Time'],
                                         officersinvolved = officers,
-                                        civsinvolved = civilians
+                                        civsinvolved = civilians,
+										incidentid = id
                                     }
-                                    sendIncidentToDiscord(3989503, "MDT Incident Report", message, "ps-mdt | Made by Project Sloth", associatedData)                                
-                                end
+                                    sendIncidentToDiscord(3989503, "MDT Incident Report", message, "ps-mdt | Made by Project Sloth", associatedData)
+								end
                             else
                                 print('No incident found in the mdt_incidents table with id: ' .. infoResult)
                             end
@@ -1419,7 +1420,7 @@ RegisterNetEvent('mdt:server:saveIncident', function(id, title, information, tag
                     end
                 end)
             elseif id > 0 then
-                MySQL.Async.fetchAll('SELECT `author`, `title`, `details` FROM `mdt_incidents` WHERE `id` = @id', { ['@id'] = id }, function(result)
+                MySQL.Async.fetchAll('SELECT `author`, `title`, `details`, `id` FROM `mdt_incidents` WHERE `id` = @id', { ['@id'] = id }, function(result)
                     if result and #result > 0 then
                         local message = generateMessageFromResult(result)
                         
@@ -1438,10 +1439,11 @@ RegisterNetEvent('mdt:server:saveIncident', function(id, title, information, tag
                                 recsentence = tonumber(associated[i]['recsentence']),
                                 time = associated[i]['Time'],
                                 officersinvolved = officers,
-                                civsinvolved = civilians
+                                civsinvolved = civilians,
+								incidentid = id
                             }
                             sendIncidentToDiscord(16711680, "MDT Incident Report has been Updated", message, "ps-mdt | Made by Project Sloth", associatedData)
-                        end
+						end
                     else
                         print('No incident found in the mdt_incidents table with id: ' .. id)
                     end
@@ -1976,7 +1978,7 @@ function sendToDiscord(color, name, message, footer)
 end
 
 function sendIncidentToDiscord(color, name, message, footer, associatedData)
-    local rolePing = "<@&1074119792258199582>" -- DOJ role to be pigned when the person is not Guilty.
+    local rolePing = "<@&1204839063081844737>" -- DOJ role to be pigned when the person is not Guilty.
     local pingMessage = ""
 
     if IncidentWebhook == '' then
@@ -2009,7 +2011,8 @@ function sendIncidentToDiscord(color, name, message, footer, associatedData)
             end
 
 
-            message = message .. "\nWarrant: " .. tostring(associatedData.warrant or "No Warrants")
+            message = message .. "\nDocket / Incident ID: " .. tostring(associatedData.incidentid or "Not Found")
+			message = message .. "\nWarrant: " .. tostring(associatedData.warrant or "No Warrants")
             message = message .. "\nReceived Fine: $" .. tostring(associatedData.fine or "Not Found")
             message = message .. "\nReceived Sentence: " .. tostring(associatedData.sentence or "Not Found")
             message = message .. "\nRecommended Fine: $" .. tostring(associatedData.recfine or "Not Found")
@@ -2083,9 +2086,11 @@ function generateMessageFromResult(result)
     local author = result[1].author
     local title = result[1].title
     local details = result[1].details
+	local id = result[1].id
     details = details:gsub("<[^>]+>", ""):gsub("&nbsp;", "")
     local message = "Author: " .. author .. "\n"
     message = message .. "Title: " .. title .. "\n"
+	message = message .. "Incident ID: " .. id .. "\n"
     message = message .. "Details: " .. details
     return message
 end
