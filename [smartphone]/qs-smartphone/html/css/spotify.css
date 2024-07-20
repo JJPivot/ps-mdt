@@ -641,7 +641,7 @@
 	position: absolute;
 	top: 93px;
 	width: calc(100% - 30px);
-	max-height: calc(100% - 21%);
+	max-height: calc(100% - 24%);
 	overflow: auto
 }
 
@@ -693,6 +693,10 @@
 .spotify-song-name {
 	position: relative;
 	top: 10px
+}
+
+.search-handle .spotify-song-name {
+	top: 0px;
 }
 
 .spotify-song-author {

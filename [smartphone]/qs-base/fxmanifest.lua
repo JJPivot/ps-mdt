@@ -1,18 +1,10 @@
-
-
-
-
-
-
-
-
 fx_version 'bodacious'
 
 game 'gta5'
 
 lua54 'yes'
 
-version '2.5.6'
+version '2.7.9'
 
 shared_scripts {
     'config/*.lua'

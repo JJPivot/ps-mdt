@@ -13,6 +13,8 @@ Locales['en'] = {
     ['YELLOW_PAGES_COPY_NUMBER'] = 'You copied a phone number',
     ['YELLOW_PAGES_CANT_DO_THIS'] = "You can't do that...",
     ['YELLOW_PAGES_DELETE_ADVERT'] = 'You deleted a post',
+    ['YELLOW_PAGES_NEED_PHOTO'] = 'You must take a photo first...',
+    ['YELLOW_PAGES_EXISTING_AD'] = 'You cannot have more than one post at a time',
     ['GENERAL_TAKE_A_PHOTO'] = 'Take A Photo',
 
     ['BUSINESS_TITLE'] = 'Booble My Business',
@@ -421,8 +423,8 @@ Locales['en'] = {
     ['NEWS_MISSING_INFORMATION'] = 'Fields are missing information',
     ['MENU_LINK_PHOTO'] = 'Link',
 
-    ['STATE_ACTIVE_POLICES'] = 'DIAL /911 FOR EMERGENCIES',
-    ['STATE_ACTIVE_DOCTORS'] = 'DIAL /911 FOR EMERGENCIES',
+    ['STATE_ACTIVE_POLICES'] = 'Active Policies',
+    ['STATE_ACTIVE_DOCTORS'] = 'Active Doctors',
     ['STATE_ACTIVE_REALESTATE'] = 'Real Estate Assets',
     ['STATE_ACTIVE_TAXIS'] = 'Active Taxis',
 

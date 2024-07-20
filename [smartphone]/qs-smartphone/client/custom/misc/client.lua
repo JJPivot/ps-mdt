@@ -302,9 +302,27 @@ function isPhoneOpen()
     end
 end
 
+local function isLink(str)
+    return string.match(str, 'https?://[%w-_%.%?%.:/%+=&]+')
+end
+
 function TakePhoto(cb) -- take foto event
     ClearHelp(true)
     Wait(0)
+    if not isLink(webhook) then
+        local url = ('https://api.fivemanage.com/api/image?apiKey=%s'):format(webhook)
+        exports['screenshot-basic']:requestScreenshotUpload(url, 'image', function(data)
+            local resp = json.decode(data)
+            if resp then
+                cb(resp.url)
+            else
+                cb(false)
+            end
+            CameraExit()
+            OpenPhone(true)
+        end)
+        return
+    end
     exports[Config.ScreenshotBasic]:requestScreenshotUpload(webhook, 'files[]', function(data2)
         if data2 then
             local resp = json.decode(data2)

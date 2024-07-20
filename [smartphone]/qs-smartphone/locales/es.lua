@@ -13,6 +13,8 @@ Locales['es'] = {
     ['YELLOW_PAGES_COPY_NUMBER'] = 'Copiaste un el numero de telefono',
     ['YELLOW_PAGES_CANT_DO_THIS'] = 'No puedes hacer eso...',
     ['YELLOW_PAGES_DELETE_ADVERT'] = 'Borraste una publicacion',
+    ['YELLOW_PAGES_NEED_PHOTO'] = 'Debes sacar una foto primero...',
+    ['YELLOW_PAGES_EXISTING_AD'] = 'No puedes tener mas de un post a la vez',
     ['GENERAL_TAKE_A_PHOTO'] = 'Sacar una foto',
 
     ['BUSINESS_TITLE'] = 'Booble My Business',

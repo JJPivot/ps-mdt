@@ -16,7 +16,7 @@
 
 .flappy-iframe {
   position: fixed; /* Cambiado a 'fixed' para asegurar que esté en la vista independientemente de la posición de desplazamiento */
-  top: 40px;
+  top: -90px;
   left: 0;
   width: 100%;
   height: 300%;

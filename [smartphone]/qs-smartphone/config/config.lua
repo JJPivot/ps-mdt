@@ -26,8 +26,16 @@ Locales = Locales or {}
 --╚██████╔╝███████╗██║░╚███║███████╗██║░░██║██║░░██║███████╗
 --░╚═════╝░╚══════╝╚═╝░░╚══╝╚══════╝╚═╝░░╚═╝╚═╝░░╚═╝╚══════╝
 
-Config.Language = 'en'  -- Set your lang in locales folder
-Config.Framework = 'qb' -- 'esx' or 'qb'
+local esxHas = GetResourceState('es_extended') == 'started'
+local qbHas = GetResourceState('qb-core') == 'started'
+
+Config.Framework = esxHas and 'esx' or qbHas and 'qb' or 'none' -- You can change to 'qb' or 'esx'
+
+--[[
+    Put the language you want or just create your own in the locales/* folder
+]]
+
+Config.Language = 'en' -- Set your lang in locales folder
 
 --[[
     'old' (Esx 1.1).
@@ -36,12 +44,15 @@ Config.Framework = 'qb' -- 'esx' or 'qb'
 
 Config.esxVersion = 'new'
 
--- SET IN TRUE IF YOU USE ox_inventory
-Config.ox_inventory = false
+local oxHas = GetResourceState('ox_inventory') == 'started'
+local codemHas = GetResourceState('codem_inventory') == 'started'
+
+Config.ox_inventory = oxHas and 'esx' or false
+Config.codem_inventory = codemHas and 'esx' or false
 
 -- Target script
-Config.Target = true             -- Enable or disable target system
-Config.TargetScript = 'qb-target' -- 'ox_target', 'qb-target' or 'qtarget' only!
+Config.Target = false             -- Enable or disable target system
+Config.TargetScript = 'qb_target' -- 'ox_target' or 'qb-target' only!
 
 -- Leave it as default if you dont know what you are doing
 Config.ScreenshotBasic = 'screenshot-basic'
@@ -72,6 +83,22 @@ Config.Ringtones = {
         { url = 'https://www.youtube.com/watch?v=cR2XilcGYOo', name = 'Bangarang' },
         { url = 'https://www.youtube.com/watch?v=OT216Rrg0jY', name = 'Life Goes On' },
     }
+}
+
+--[[
+    The sound system comes by default with xsound, but you can purchase mx-surround,
+    this script will work natively by default without you configuring anything, a high
+    quality sound asset with 3d/8d sounds that will give you a great realistic system.
+
+    You can buy mx-surround here: https://mxstore.tebex.io/package/5864855
+]]
+
+Config.MXSurround = GetResourceState('mx-surround') == 'started'
+Config.MXSurroundPanner = {        -- This is a custom 3d panner for mx-surround. It doesn't work with xsound
+    panningModel = 'HRTF',
+    refDistance = 1.2,             -- Distance of the volume dropoff start
+    rolloffFactor = 1.5,           -- How fast the volume drops off (don't 0.1)
+    distanceModel = 'exponential', -- How the volume drops off (linear, inverse, exponential)
 }
 
 --[[
@@ -175,7 +202,7 @@ Config.BankSystem = 'id'
     'codem-billing'    Works on ESX and QBCore (https://codem.tebex.io/package/5920201)
 ]]
 
-Config.billingSystem = 'okokBilling'
+Config.billingSystem = 'okokbilling'
 
 --[[
     ESX                     = 'esx_billing:payBill'
@@ -214,7 +241,7 @@ Config.ValetPrice = 1000       -- Price to bring your vehicle to you
 -- 'qs-garages'
 -- 'qs-advancedgarages'
 
-Config.GarageScript = 'cd_garage'
+Config.GarageScript = 'cd-garage'
 
 -- ██╗░░░██╗███████╗██╗░░██╗██╗░█████╗░██╗░░░░░███████╗ ██╗░░██╗███████╗██╗░░░██╗░██████╗
 -- ██║░░░██║██╔════╝██║░░██║██║██╔══██╗██║░░░░░██╔════╝ ██║░██╔╝██╔════╝╚██╗░██╔╝██╔════╝
@@ -228,12 +255,14 @@ Config.GarageScript = 'cd_garage'
 ---@param plate Return the plate of vehicle
 ---@param model Give the model IsNamedRendertargetLinked
 function VehicleKeys(vehicle, hash, plate, model)
-    if GetResourceState('qs-vehiclekeys') == 'started' then     -- QS VEHICLEKEYS
+    if GetResourceState('qs-vehiclekeys') == 'started' then
         exports['qs-vehiclekeys']:GiveKeys(plate, model)
-    elseif GetResourceState('qb-vehiclekeys') == 'started' then -- QB VEHICLEKEYS
+    elseif GetResourceState('qb-vehiclekeys') == 'started' then
         TriggerEvent('vehiclekeys:client:SetOwner', QBCore.Functions.GetPlate(vehicle))
-    elseif GetResourceState('vehicles_keys') == 'started' then  -- JAKSAM VEHICLEKEYS
+    elseif GetResourceState('vehicles_keys') == 'started' then
         TriggerServerEvent('vehicles_keys:selfGiveVehicleKeys', plate)
+    elseif GetResourceState('mono_carkeys') == 'started' then
+        exports.mono_carkeys:ClientInventoryKeys('add', plate)
     else
         print('^4[QS Smartphone] ^3[Debug]^0: If you have any vehiclekeys remember to add your vehiclekeys event in config.lua line 1249...') -- You can remove this.
     end
@@ -278,7 +307,7 @@ Config.PoliceAppJobs = {
 --- @param img  'Image of contact'
 Config.Jobs = {
     { job = 'police',    name = 'Police',  img = './img/apps/police.png' },
-    { job = 'ambulance', name = 'EMS',      img = './img/apps/ambulance.png' },
+    { job = 'ambulance', name = 'Ems',      img = './img/apps/ambulance.png' },
     { job = 'mechanic',  name = 'Mechanic', img = './img/apps/mechanic.png' },
 }
 
@@ -302,11 +331,11 @@ Config.jobCommands = { -- Just enter a number here, this is the number that will
 Config.JobsInPhone = {
     ['police'] = {
         order = 1,
-        name = 'police',
+        name = 'sasp',
         label = 'Police',
         info = 'San Andreas State Police',
         score = '5',
-        duty = false,
+        duty = true,
     },
     ['ambulance'] = {
         order = 2,
@@ -314,7 +343,7 @@ Config.JobsInPhone = {
         label = 'Fire & EMS',
         info = 'San Andreas Fire and Rescue',
         score = '5',
-        duty = false,
+        duty = true,
     },
     ['shoprowdyracingmotorsports'] = {
         order = 3,
@@ -428,16 +457,8 @@ Config.JobsInPhone = {
         score = '5',
         duty = false,
     },
-    ['shopcjsdrags'] = {
-        order = 17,
-        name = 'shopcjsdrags',
-        label = 'CJs Drags',
-        info = 'Drag Dealership and Performance Shop',
-        score = '5',
-        duty = false,
-    },
     ['shoplowlifelegends'] = {
-        order = 18,
+        order = 17,
         name = 'shoplowlifelegends',
         label = 'Lowlife Legends',
         info = 'Lowrider and Donk Dealership',
@@ -468,8 +489,9 @@ Config.BlackMarketAccount = 'bank' -- Account with which you want to pay in Onio
 
 Config.Darkweb = {
     List = {
-        [1] = { item = 'WEAPON_PISTOL', label = 'Pistol', isItem = true, price = 18000 },
-        [2] = { item = 'WEAPON_PISTOL50', label = 'Pistol 50', isItem = true, price = 29000 },
+        [1] = { item = 'WEAPON_PISTOL', label = 'Pistol', isItem = true, price = 8000 },
+        [2] = { item = 'WEAPON_PISTOL50', label = 'Pistol 50', isItem = true, price = 9000 },
+        
         -- [9] = { item = 'laptop', label = 'Hacker Laptop', isItem = true, price = 700}, -- If you use `Config.WeaponsItems = false` then you can choose if it's an item with `isItem = true`.
     },
 }
@@ -576,16 +598,16 @@ Config.Battery = {
 }
 
 -- Here you can add plugs to charge your phone wherever you want.
-Config.HouseChargeCoords = {
+Config.ChargerSpots = {
     {
-        coords = vec3(1431.4039306641, -2009.6640625, 61.349201202393),
+        coords = vec3(1430.043945, -2004.237305, 62.659302),
         isAvailable = true,
         chargeSpeed = 3.0 -- 3 second later +3 charge.
     },
 }
 
-Config.DefaultChargeCoords = #Config.HouseChargeCoords -- Don't touch this please.
-Config.PowerbankSpeed = 1.0                            -- Charging speed of the item `powerbank`.
+Config.DefaultChargeCoords = #Config.ChargerSpots -- Don't touch this please.
+Config.PowerbankSpeed = 1.0                       -- Charging speed of the item `powerbank`.
 
 
 --░█████╗░░█████╗░███╗░░██╗███╗░░██╗███████╗░█████╗░████████╗██╗░█████╗░███╗░░██╗
@@ -665,8 +687,8 @@ Config.Mountains = {
 --░╚═════╝░╚═════╝░╚══════╝╚═╝░░╚═╝  ╚═════╝░╚═╝░░╚═╝╚═╝░░░╚═╝░░░╚══════╝╚═╝░░╚═╝
 
 Config.Decimals = false           -- Use decimal numbers?
-Config.UberMinimumMoney = 1000    -- Minimum money to enter service or to request a vehicle.
-Config.UberMaximumMoney = 2500    -- Maximum price per trip, you can not earn more than this for each trip.
+Config.UberMinimumMoney = 5000    -- Minimum money to enter service or to request a vehicle.
+Config.UberMaximumMoney = 8000    -- Maximum price per trip, you can not earn more than this for each trip.
 Config.UberDriverAccount = 'bank' -- Remember that if you use QBCore, the account 'money' does not exist, it is 'cash'.
 
 Config.Classes = {                -- You can ignore this setting, it will be executed in future updates.
@@ -789,9 +811,9 @@ Config.ResetPassword = {
 Config.CustomDispatch = false -- Use a custom dispatch script? (Jobs message only)
 --[[
     'client' excute on client side go to (qs-smartphone/client/custom/misc/dispatch.lua 'qs-smartphone:client:CustomClientDispatch')
-    'server' excute on server side go to (qs-smartphone/server/custom/misc/dispatch.lua 'qs-smartphone:sever:CustomServerDispatch')
+    'server' excute on server side go to (qs-smartphone/server/custom/misc/dispatch.lua 'qs-smartphone:server:CustomServerDispatch')
 ]]
 Config.CustomDispatchSide = 'client'
-
+Config.OneCallToServer = false
 
 Config.Debug = false -- Debug mode, only for development.

@@ -1,18 +1,10 @@
-
-
-
-
-
-
-
-
 fx_version 'bodacious'
 
 game 'gta5'
 
 lua54 'yes'
 
-version '2.7.3'
+version '2.8.2'
 
 ui_page 'html/index.html'
 

@@ -1,4 +1,4 @@
-RegisterNetEvent('qs-smartphone:sever:CustomServerDispatch', function(data, sender)
+RegisterNetEvent('qs-smartphone:server:CustomServerDispatch', function(data, sender)
     --[[ 
         data.phone    the job 
         data.message  the message 

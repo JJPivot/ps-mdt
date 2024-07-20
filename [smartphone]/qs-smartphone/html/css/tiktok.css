@@ -177,12 +177,12 @@
 .tiktok-video {
 	position: absolute;
 	display: block;
-	width: 180%;
+	width: 500px;
 	left: -75px;
-	height: 100%;
-	top: 23px;
+	height: 650px;
+	top: -40px !important;
 	object-fit: fill
-}
+} 
 
 .tiktok-loading {
 	position: absolute;
@@ -192,7 +192,7 @@
 	top: 50%;
 	transform: translate(-50%, -50%)
 }
-
+ 
 .tiktok-videoActions {
 	position: absolute;
 	left: 255px;
@@ -351,6 +351,7 @@
 .personal-video {
 	position: relative;
 	height: 110px;
+		object-fit: cover !important;
 	width: 70px !important
 }
 

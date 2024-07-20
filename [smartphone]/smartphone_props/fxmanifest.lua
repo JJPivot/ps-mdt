@@ -2,7 +2,7 @@ fx_version 'bodacious'
 
 game 'gta5'
 
-version '2.4.3'
+version '2.7.9'
 
 data_file 'DLC_ITYP_REQUEST' 'stream/prop_phonequasar_mega.ytyp'
 
@@ -19,4 +19,5 @@ files {
     'stream/prop_phone_mega_9.ydr',
     'stream/prop_phone_mega_10.ydr',
 }
+
 dependency '/assetpacks'
